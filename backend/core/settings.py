@@ -6,13 +6,10 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ── SEGURIDAD ─────────────────────────────────────────────────────────────────
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-cambia-esto-en-produccion')
 DEBUG      = config('DEBUG', default=False, cast=bool)
-
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
-# ── APPS ──────────────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -26,7 +23,6 @@ INSTALLED_APPS = [
     'cafeteria',
 ]
 
-# ── MIDDLEWARE ────────────────────────────────────────────────────────────────
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -58,9 +54,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# ── BASE DE DATOS ─────────────────────────────────────────────────────────────
-# En Railway: DATABASE_URL se inyecta automáticamente al enlazar PostgreSQL.
-# En local:   si no existe DATABASE_URL, usa SQLite.
 DATABASE_URL = config('DATABASE_URL', default=None)
 
 if DATABASE_URL:
@@ -79,7 +72,6 @@ else:
         }
     }
 
-# ── CORS ──────────────────────────────────────────────────────────────────────
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 CORS_ALLOWED_ORIGINS = [
@@ -87,41 +79,40 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
     FRONTEND_URL,
     'https://practica-silvia-sandy.vercel.app',
+    'https://proyecto-cafeteria-silvia-sandy.vercel.app',
     'https://web-production-4bcaf.up.railway.app',
+    'https://hospitable-commitment-production-90c1.up.railway.app',
 ]
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     'https://web-production-4bcaf.up.railway.app',
+    'https://hospitable-commitment-production-90c1.up.railway.app',
     'https://practica-silvia-sandy.vercel.app',
+    'https://proyecto-cafeteria-silvia-sandy.vercel.app',
 ]
 
-# ── REST FRAMEWORK ────────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
 }
 
-# ── JWT ───────────────────────────────────────────────────────────────────────
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME':  timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES':      ('Bearer',),
 }
 
-# ── GOOGLE OAUTH2 ─────────────────────────────────────────────────────────────
 GOOGLE_CLIENT_ID     = config('GOOGLE_CLIENT_ID',     default='')
 GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
 GOOGLE_REDIRECT_URI  = config('GOOGLE_REDIRECT_URI',  default='http://localhost:8000/api/auth/google/callback/')
 
-# ── ARCHIVOS ESTÁTICOS ────────────────────────────────────────────────────────
 STATIC_URL  = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL  = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# ── MISC ──────────────────────────────────────────────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'cafeteria.Usuario'
 
