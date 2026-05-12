@@ -6,6 +6,6 @@
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "env": {
-    "VITE_API_URL": "https://TU-PROYECTO.up.railway.app/api"
+    "VITE_API_URL": "https://hospitable-commitment-production-90c1.up.railway.app/api"
   }
 }
