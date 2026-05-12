@@ -73,20 +73,41 @@ export default function Login() {
   const [modal, setModal] = useState(null);
   const [alumnoTab, setAlumnoTab] = useState('entrar');
   const [form, setForm] = useState({ username: '', password: '' });
+  const [empForm, setEmpForm] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
+  const [empError, setEmpError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [empLoading, setEmpLoading] = useState(false);
   const [regForm, setRegForm] = useState({ username: '', email: '', first_name: '', last_name: '', password: '', password2: '' });
   const [regError, setRegError] = useState('');
   const [regSuccess, setRegSuccess] = useState('');
   const [regLoading, setRegLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  // Login alumno — redirige según rol
+  const handleLoginAlumno = async (e) => {
     e.preventDefault(); setError(''); setLoading(true);
     try {
       const user = await login(form);
       navigate(user.rol === 'empleado' || user.is_staff ? '/empleado' : '/menu');
     } catch { setError('Usuario o contraseña incorrectos'); }
     finally { setLoading(false); }
+  };
+
+  // Login empleado — solo permite acceso si es empleado o staff
+  const handleLoginEmpleado = async (e) => {
+    e.preventDefault(); setEmpError(''); setEmpLoading(true);
+    try {
+      const user = await login(empForm);
+      if (user.rol === 'empleado' || user.is_staff) {
+        navigate('/empleado');
+      } else {
+        // Es alumno — cerramos sesión y mostramos error
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        setEmpError('Acceso denegado. Esta sección es solo para empleados.');
+      }
+    } catch { setEmpError('Usuario o contraseña incorrectos'); }
+    finally { setEmpLoading(false); }
   };
 
   const handleRegisterAlumno = async (e) => {
@@ -104,8 +125,9 @@ export default function Login() {
   };
 
   const closeModal = () => {
-    setModal(null); setError(''); setRegError(''); setRegSuccess('');
+    setModal(null); setError(''); setEmpError(''); setRegError(''); setRegSuccess('');
     setForm({ username: '', password: '' });
+    setEmpForm({ username: '', password: '' });
     setAlumnoTab('entrar');
   };
 
@@ -139,7 +161,7 @@ export default function Login() {
             <div className="divider">o con usuario y contraseña</div>
 
             {alumnoTab === 'entrar' && (
-              <form onSubmit={handleLogin}>
+              <form onSubmit={handleLoginAlumno}>
                 <div className="field"><label>Correo o usuario</label><input type="text" placeholder="usuario@iespiobaroja.org" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} required /></div>
                 <div className="field"><label>Contraseña</label><input type="password" placeholder="••••••••" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required /></div>
                 {error && <p className="error-msg">{error}</p>}
@@ -167,24 +189,24 @@ export default function Login() {
         </div>
       )}
 
-      {/* ── MODAL EMPLEADO — solo login, SIN opción de crear cuenta ── */}
+      {/* ── MODAL EMPLEADO — solo login, sin crear cuenta, con validación de rol ── */}
       {modal === 'empleado' && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-box" onClick={e => e.stopPropagation()}>
             <h2 className="modal-title">Acceso Personal</h2>
             <p className="modal-subtitle">Solo para empleados de cafetería</p>
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleLoginEmpleado}>
               <div className="field">
                 <label>Código de empleado o usuario</label>
-                <input type="text" placeholder="EMP-XXXX" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} required />
+                <input type="text" placeholder="EMP-XXXX" value={empForm.username} onChange={e => setEmpForm({ ...empForm, username: e.target.value })} required />
               </div>
               <div className="field">
                 <label>Contraseña</label>
-                <input type="password" placeholder="••••••••" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
+                <input type="password" placeholder="••••••••" value={empForm.password} onChange={e => setEmpForm({ ...empForm, password: e.target.value })} required />
               </div>
-              {error && <p className="error-msg">{error}</p>}
-              <button className="btn-submit" type="submit" disabled={loading}>{loading ? 'Verificando...' : 'Acceder al Panel'}</button>
+              {empError && <p className="error-msg">{empError}</p>}
+              <button className="btn-submit" type="submit" disabled={empLoading}>{empLoading ? 'Verificando...' : 'Acceder al Panel'}</button>
             </form>
 
             <button className="btn-cancel" onClick={closeModal}>Volver al inicio</button>
