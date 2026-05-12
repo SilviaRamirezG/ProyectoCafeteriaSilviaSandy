@@ -3,24 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './context/authcontext';
 import { api } from './services/api';
 
-const CSS = `
+const getCSS = (dark) => `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap');
 
-  :root { --green: #407e44; --light-green: #ebf5ec; --text: #333; --bg: #f4f7f5; --white: #fff; --border: #e0e0e0; }
+  :root {
+    --green: #407e44;
+    --light-green: ${dark ? '#1a3d1c' : '#ebf5ec'};
+    --text: ${dark ? '#f0f0f0' : '#333'};
+    --bg: ${dark ? '#121212' : '#f4f7f5'};
+    --white: ${dark ? '#1e1e1e' : '#fff'};
+    --border: ${dark ? '#333' : '#e0e0e0'};
+    --subtext: ${dark ? '#aaa' : '#666'};
+  }
 
   .menu-root { min-height: 100vh; background: var(--bg); display: flex; justify-content: center; font-family: 'DM Sans', sans-serif; }
   .mobile { width: 100%; max-width: 430px; background: var(--bg); min-height: 100vh; position: relative; }
-  .menu-header { position: sticky; top: 0; z-index: 20; background: var(--white); padding: 10px 5px 10px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .menu-header { position: sticky; top: 0; z-index: 20; background: var(--white); padding: 10px 5px 10px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
   .logo-area { display: flex; align-items: center; gap: 10px; }
   .logo-area img { width: 34px; height: 34px; object-fit: contain; }
   .logo-area strong { font-size: 13px; color: var(--text); font-weight: 700; }
   .icon-btn { background: none; border: none; cursor: pointer; color: var(--text); padding: 0px 4px; display: flex; align-items: center; }
   .notif-wrap { position: relative; }
-  .notif-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: #ff5252; border-radius: 50%; border: 1.5px solid white; }
+  .notif-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: #ff5252; border-radius: 50%; border: 1.5px solid var(--white); }
   .dropdown-wrap { position: relative; margin-left: auto; margin-right: 0; }
-  .dropdown-menu { position: absolute; top: 42px; right: 0; background: white; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 160px; z-index: 100; overflow: hidden; border: 1px solid var(--border); }
-  .dropdown-item { display: block; padding: 12px 16px; font-size: 14px; color: var(--text); cursor: pointer; background: none; border: none; width: 100%; text-align: left; text-decoration: none; font-family: 'DM Sans', sans-serif; }
+  .dropdown-menu { position: absolute; top: 42px; right: 0; background: var(--white); border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); min-width: 160px; z-index: 100; overflow: hidden; border: 1px solid var(--border); }
+  .dropdown-item { display: block; padding: 12px 16px; font-size: 14px; color: var(--text); cursor: pointer; background: none; border: none; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; }
   .dropdown-item:hover { background: var(--light-green); color: var(--green); }
   .dropdown-item.danger { color: #ff5252; }
   .dropdown-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
@@ -29,7 +37,7 @@ const CSS = `
   .menu-title { font-size: 26px; font-weight: 800; color: var(--green); text-align: center; margin: 10px 0 18px; }
 
   .product-card { background: var(--white); border-radius: 16px; overflow: hidden; margin-bottom: 14px; border: 1px solid var(--border); display: flex; align-items: stretch; }
-  .product-desc-box { width: 110px; flex-shrink: 0; background: linear-gradient(135deg, #e8f5e8, #d4edda); display: flex; align-items: center; justify-content: center; padding: 14px 10px; text-align: center; font-size: 12px; color: #2d5a30; font-style: italic; line-height: 1.4; border-right: 1px solid var(--border); }
+  .product-desc-box { width: 110px; flex-shrink: 0; background: ${dark ? 'linear-gradient(135deg, #1a3d1c, #0f2910)' : 'linear-gradient(135deg, #e8f5e8, #d4edda)'}; display: flex; align-items: center; justify-content: center; padding: 14px 10px; text-align: center; font-size: 12px; color: ${dark ? '#7ec97f' : '#2d5a30'}; font-style: italic; line-height: 1.4; border-right: 1px solid var(--border); }
   .product-info { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; justify-content: center; }
   .product-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
   .product-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
@@ -38,27 +46,28 @@ const CSS = `
   .btn-add:hover { background: #356838; }
   .qty-ctrl { display: flex; align-items: center; gap: 10px; }
   .qty-btn { width: 30px; height: 30px; background: var(--light-green); color: var(--green); border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .qty-num { font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
+  .qty-num { font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; color: var(--text); }
 
-  .bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--white); padding: 14px 18px; border-top: 1px solid var(--border); box-shadow: 0 -4px 12px rgba(0,0,0,0.06); }
+  .bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--white); padding: 14px 18px; border-top: 1px solid var(--border); box-shadow: 0 -4px 12px rgba(0,0,0,0.1); }
   .btn-continuar { display: block; background: var(--green); color: white; text-align: center; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; border: none; width: 100%; transition: background 0.2s; font-family: 'DM Sans', sans-serif; }
   .btn-continuar:hover { background: #356838; }
-  .btn-continuar:disabled { background: #ccc; cursor: not-allowed; }
+  .btn-continuar:disabled { background: #555; cursor: not-allowed; }
   .cart-badge { background: white; color: var(--green); border-radius: 12px; padding: 2px 8px; font-size: 13px; margin-left: 8px; font-weight: 800; }
 
-  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); display: flex; justify-content: center; align-items: center; z-index: 200; }
-  .modal-box { background: white; border-radius: 22px; padding: 26px; width: 90%; max-width: 380px; max-height: 85vh; overflow-y: auto; }
+  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 200; }
+  .modal-box { background: var(--white); border-radius: 22px; padding: 26px; width: 90%; max-width: 380px; max-height: 85vh; overflow-y: auto; }
   .modal-title { font-size: 1.3rem; font-weight: 800; margin: 0 0 18px; color: var(--text); }
+  .modal-text { color: var(--text); }
   .btn-close { display: block; width: 100%; padding: 13px; background: var(--green); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 18px; font-size: 15px; font-family: 'DM Sans', sans-serif; }
 
   .btn-repetir { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 14px; padding: 11px; background: var(--light-green); color: var(--green); border: 1.5px solid var(--green); border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
   .btn-repetir:hover { background: var(--green); color: white; }
 
   .pedido-card { border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
-  .pedido-header { padding: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-  .pedido-body { padding: 13px; background: #fafafa; border-top: 1px dashed var(--border); font-size: 13px; }
+  .pedido-header { padding: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: var(--white); }
+  .pedido-body { padding: 13px; background: ${dark ? '#2a2a2a' : '#fafafa'}; border-top: 1px dashed var(--border); font-size: 13px; color: var(--text); }
   .pedido-line { display: flex; justify-content: space-between; margin-bottom: 6px; }
-  .pedido-qr-box { margin-top: 14px; padding: 14px; background: white; border-radius: 12px; border: 1px dashed #ccc; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .pedido-qr-box { margin-top: 14px; padding: 14px; background: ${dark ? '#333' : 'white'}; border-radius: 12px; border: 1px dashed #555; display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .pedido-qr-img { width: 120px; height: 120px; }
   .pedido-qr-codigo { font-size: 20px; font-weight: 900; letter-spacing: 4px; color: var(--text); }
   .pedido-qr-label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
@@ -68,14 +77,15 @@ const CSS = `
   .estado-entregado { background: #e0e7ff; color: #3730a3; }
   .estado-cancelado { background: #fee2e2; color: #991b1b; }
   .loading { text-align: center; padding: 40px; color: #aaa; font-size: 15px; }
-  .empty { text-align: center; padding: 40px; color: #bbb; }
+  .empty { text-align: center; padding: 40px; color: #aaa; }
+
   .switch { position: relative; display: inline-block; width: 42px; height: 22px; }
   .switch input { opacity: 0; width: 0; height: 0; }
-  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 22px; transition: .3s; }
+  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #555; border-radius: 22px; transition: .3s; }
   .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
   input:checked + .slider { background: var(--green); }
   input:checked + .slider:before { transform: translateX(20px); }
-  .ajuste-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .ajuste-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); color: var(--text); }
   .btn-danger { color: #ff5252; background: none; border: 1px solid #ff5252; padding: 10px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 700; margin-top: 16px; font-family: 'DM Sans', sans-serif; }
 `;
 
@@ -94,9 +104,13 @@ export default function Menu() {
   const [pedidos, setPedidos] = useState([]);
   const [loadingPedidos, setLoadingPedidos] = useState(false);
   const [expandido, setExpandido] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
   const [notifOn, setNotifOn] = useState(true);
   const [loadingProductos, setLoadingProductos] = useState(true);
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
 
   useEffect(() => {
     api.getProductos()
@@ -153,7 +167,7 @@ export default function Menu() {
 
   return (
     <>
-      <style>{CSS}</style>
+      <style>{getCSS(darkMode)}</style>
       <div className="menu-root">
         <div className="mobile">
           <header className="menu-header">
@@ -225,10 +239,10 @@ export default function Menu() {
         <div className="overlay" onClick={() => setModal(null)}>
           <div className="modal-box" onClick={e => e.stopPropagation()}>
             <h2 className="modal-title">Mi Perfil</h2>
-            <p><strong>Nombre:</strong> {user?.first_name} {user?.last_name}</p>
-            <p style={{ marginTop: 8 }}><strong>Usuario:</strong> {user?.username}</p>
-            <p style={{ marginTop: 8 }}><strong>Saldo:</strong> {parseFloat(user?.saldo || 0).toFixed(2)}€</p>
-            {user?.tarjeta && <p style={{ marginTop: 8 }}><strong>Tarjeta guardada:</strong> {user.tarjeta.numero} · {user.tarjeta.expiry}</p>}
+            <p className="modal-text"><strong>Nombre:</strong> {user?.first_name} {user?.last_name}</p>
+            <p className="modal-text" style={{ marginTop: 8 }}><strong>Usuario:</strong> {user?.username}</p>
+            <p className="modal-text" style={{ marginTop: 8 }}><strong>Saldo:</strong> {parseFloat(user?.saldo || 0).toFixed(2)}€</p>
+            {user?.tarjeta && <p className="modal-text" style={{ marginTop: 8 }}><strong>Tarjeta:</strong> {user.tarjeta.numero} · {user.tarjeta.expiry}</p>}
             <button className="btn-close" onClick={() => setModal(null)}>Cerrar</button>
           </div>
         </div>
@@ -244,8 +258,8 @@ export default function Menu() {
               <div className="pedido-card" key={p.id}>
                 <div className="pedido-header" onClick={() => setExpandido(expandido === p.id ? null : p.id)}>
                   <div>
-                    <strong>{new Date(p.creado).toLocaleDateString('es-ES')} — {new Date(p.creado).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}h</strong>
-                    <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>#{p.id} · <span className={estadoPillClass(p.estado)}>{p.estado}</span></div>
+                    <strong style={{ color: 'var(--text)' }}>{new Date(p.creado).toLocaleDateString('es-ES')} — {new Date(p.creado).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}h</strong>
+                    <div style={{ fontSize: 12, color: '#aaa', marginTop: 2 }}>#{p.id} · <span className={estadoPillClass(p.estado)}>{p.estado}</span></div>
                   </div>
                   <span style={{ fontWeight: 700, color: 'var(--green)' }}>{parseFloat(p.total).toFixed(2)}€ {expandido === p.id ? '▴' : '▾'}</span>
                 </div>
@@ -265,7 +279,7 @@ export default function Menu() {
                         <p className="pedido-qr-label">Muéstralo en la cafetería</p>
                       </div>
                     )}
-                    {p.estado === 'entregado' && <div style={{ marginTop: 12, textAlign: 'center', color: '#065f46', fontWeight: 700, fontSize: 13 }}>✓ Pedido recogido</div>}
+                    {p.estado === 'entregado' && <div style={{ marginTop: 12, textAlign: 'center', color: '#4caf50', fontWeight: 700, fontSize: 13 }}>✓ Pedido recogido</div>}
                     {p.items?.length > 0 && (
                       <button className="btn-repetir" onClick={(e) => { e.stopPropagation(); repetirPedido(p); }}>
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>replay</span>
@@ -287,11 +301,17 @@ export default function Menu() {
             <h2 className="modal-title">Ajustes</h2>
             <div className="ajuste-row">
               <span>Modo Oscuro</span>
-              <label className="switch"><input type="checkbox" checked={darkMode} onChange={e => setDarkMode(e.target.checked)} /><span className="slider" /></label>
+              <label className="switch">
+                <input type="checkbox" checked={darkMode} onChange={e => setDarkMode(e.target.checked)} />
+                <span className="slider" />
+              </label>
             </div>
             <div className="ajuste-row">
               <span>Notificaciones</span>
-              <label className="switch"><input type="checkbox" checked={notifOn} onChange={e => setNotifOn(e.target.checked)} /><span className="slider" /></label>
+              <label className="switch">
+                <input type="checkbox" checked={notifOn} onChange={e => setNotifOn(e.target.checked)} />
+                <span className="slider" />
+              </label>
             </div>
             <button className="btn-danger" onClick={() => { if (window.confirm('¿Desactivar cuenta?')) { logout(); navigate('/'); } }}>Desactivar Cuenta</button>
             <button className="btn-close" onClick={() => setModal(null)}>Guardar y Salir</button>
@@ -301,3 +321,4 @@ export default function Menu() {
     </>
   );
 }
+
