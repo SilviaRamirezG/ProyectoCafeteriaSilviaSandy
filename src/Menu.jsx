@@ -87,6 +87,7 @@ const getCSS = (dark) => `
   input:checked + .slider:before { transform: translateX(20px); }
   .ajuste-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); color: var(--text); }
   .btn-danger { color: #ff5252; background: none; border: 1px solid #ff5252; padding: 10px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 700; margin-top: 16px; font-family: 'DM Sans', sans-serif; }
+  .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
 `;
 
 const estadoPillClass = (estado) => {
@@ -107,6 +108,7 @@ export default function Menu() {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
   const [notifOn, setNotifOn] = useState(true);
   const [loadingProductos, setLoadingProductos] = useState(true);
+  const [desactivando, setDesactivando] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('darkMode', darkMode);
@@ -163,6 +165,19 @@ export default function Menu() {
     setCart(nuevoCart);
     setModal(null);
     if (itemsValidos.length < pedido.items.length) alert('Algunos productos ya no están disponibles y no se han añadido.');
+  };
+
+  const handleDesactivarCuenta = async () => {
+    if (!window.confirm('¿Seguro que quieres desactivar tu cuenta? No podrás volver a iniciar sesión con este usuario.')) return;
+    setDesactivando(true);
+    try {
+      await api.desactivarCuenta();
+      logout();
+      navigate('/');
+    } catch {
+      alert('Error al desactivar la cuenta. Inténtalo de nuevo.');
+      setDesactivando(false);
+    }
   };
 
   return (
@@ -312,7 +327,13 @@ export default function Menu() {
                 <span className="slider" />
               </label>
             </div>
-            <button className="btn-danger" onClick={() => { if (window.confirm('¿Desactivar cuenta?')) { logout(); navigate('/'); } }}>Desactivar Cuenta</button>
+            <button
+              className="btn-danger"
+              disabled={desactivando}
+              onClick={handleDesactivarCuenta}
+            >
+              {desactivando ? 'Desactivando...' : 'Desactivar Cuenta'}
+            </button>
             <button className="btn-close" onClick={() => setModal(null)}>Guardar y Salir</button>
           </div>
         </div>
@@ -320,4 +341,5 @@ export default function Menu() {
     </>
   );
 }
+
 

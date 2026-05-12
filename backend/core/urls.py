@@ -9,7 +9,7 @@ from cafeteria.views import (
     ProductoViewSet, PedidoViewSet, PagoViewSet,
     ValidarQRView, EstadisticasView, PagarPedidoView,
     GoogleLoginRedirectView, GoogleCallbackView,
-    RedsysNotificacionView,
+    RedsysNotificacionView, DesactivarCuentaView,
 )
 
 router = DefaultRouter()
@@ -37,6 +37,9 @@ urlpatterns = [
     path('api/qr/validar/',                    ValidarQRView.as_view()),
     path('api/estadisticas/',                  EstadisticasView.as_view()),
     path('api/pedidos/<int:pedido_id>/pagar/', PagarPedidoView.as_view()),
+
+    # Desactivar cuenta
+    path('api/usuarios/desactivar/',           DesactivarCuentaView.as_view()),
 
     # Router
     path('api/', include(router.urls)),

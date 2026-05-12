@@ -31,6 +31,10 @@ export const api = {
   guardarTarjeta: (data) =>
     fetch(`${BASE_URL}/usuarios/guardar-tarjeta/`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
 
+  // ── DESACTIVAR CUENTA ─────────────────────────────────────────────────────
+  desactivarCuenta: () =>
+    fetch(`${BASE_URL}/usuarios/desactivar/`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+
   // ── PRODUCTOS ─────────────────────────────────────────────────────────────
   getProductos: () =>
     fetch(`${BASE_URL}/productos/`, { headers: getHeaders() }).then(handleResponse),

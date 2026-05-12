@@ -151,20 +151,11 @@ class GoogleCallbackView(APIView):
 
 # ─── REDSYS IPN SIMULADA ─────────────────────────────────────────────────────
 class RedsysNotificacionView(APIView):
-    """
-    POST /api/redsys/notificacion/
-    Simula la notificación IPN que Redsys envía al backend tras un pago.
-    En un entorno real, este endpoint lo llamaría el servidor de Redsys
-    con una firma HMAC-SHA256 para verificar la autenticidad.
-    Aquí lo llama el frontend directamente tras la confirmación del usuario.
-    ds_response '0000' = pago autorizado.
-    """
     @transaction.atomic
     def post(self, request):
         pedido_id   = request.data.get('pedido_id')
         ds_response = str(request.data.get('ds_response', '9999'))
 
-        # Código de respuesta Redsys: 0000-0099 = autorizado
         try:
             codigo = int(ds_response)
             autorizado = 0 <= codigo <= 99
@@ -183,7 +174,6 @@ class RedsysNotificacionView(APIView):
             return Response({'error': 'Pedido no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
         if pedido.estado != 'pendiente':
-            # Ya fue procesado — devolvemos el estado actual sin error
             qr = getattr(pedido, 'qr', None)
             return Response({
                 **PedidoSerializer(pedido).data,
@@ -191,12 +181,10 @@ class RedsysNotificacionView(APIView):
                 'nombre_usuario': pedido.usuario.get_full_name() or pedido.usuario.username,
             })
 
-        # Registrar el pago
         Pago.objects.create(pedido=pedido, metodo='redsys', monto=pedido.total)
         pedido.estado = 'pagado'
         pedido.save()
 
-        # Generar QR de recogida
         qr, _ = QRToken.objects.get_or_create(pedido=pedido)
 
         data = PedidoSerializer(pedido).data
@@ -411,3 +399,14 @@ class EstadisticasView(APIView):
             'top_productos':      top_productos,
             'ingresos_diarios':   ingresos_diarios,
         })
+
+
+# ─── DESACTIVAR CUENTA ───────────────────────────────────────────────────────
+class DesactivarCuentaView(APIView):
+    def post(self, request):
+        user = request.user
+        user.is_active = False
+        user.save()
+        return Response({'mensaje': 'Cuenta desactivada correctamente'}, status=status.HTTP_200_OK)
+
+        
