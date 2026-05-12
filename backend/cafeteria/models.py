@@ -10,12 +10,9 @@ class Usuario(AbstractUser):
     id_empleado = models.CharField(max_length=20, blank=True, null=True, unique=True,
                                    help_text="Código único de empleado (ej: EMP-0001)")
 
-    # Tarjeta guardada (últimos 4 dígitos, titular y caducidad — nunca datos sensibles completos)
-    tarjeta_numero  = models.CharField(max_length=4, blank=True, null=True,
-                                       help_text="Últimos 4 dígitos de la tarjeta guardada")
+    tarjeta_numero  = models.CharField(max_length=4, blank=True, null=True)
     tarjeta_titular = models.CharField(max_length=100, blank=True, null=True)
-    tarjeta_expiry  = models.CharField(max_length=5, blank=True, null=True,
-                                       help_text="Caducidad MM/AA")
+    tarjeta_expiry  = models.CharField(max_length=5, blank=True, null=True)
 
     groups = models.ManyToManyField(
         'auth.Group',
@@ -43,6 +40,11 @@ class Producto(models.Model):
     disponible  = models.BooleanField(default=True)
     stock       = models.IntegerField(default=100)
     creado      = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        # disponible se actualiza automáticamente según el stock
+        self.disponible = self.stock > 0
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre
