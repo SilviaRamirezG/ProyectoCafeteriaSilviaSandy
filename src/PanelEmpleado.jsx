@@ -62,32 +62,29 @@ const CSS = `
   .ranking-bar-fill { background: var(--verde-oscuro); height: 100%; border-radius: 4px; transition: width 0.5s; }
 
   .menu-layout-grid { display: grid; grid-template-columns: 1fr 350px; gap: 30px; align-items: start; }
-  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-  .menu-item-card { background: white; border-radius: 15px; border: 1px solid var(--gris-borde); overflow: hidden; text-align: center; }
-  .menu-item-img { height: 120px; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .menu-item-img img { width: 100%; height: 100%; object-fit: cover; }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+  .menu-item-card { background: white; border-radius: 15px; border: 1px solid var(--gris-borde); overflow: hidden; }
+  .menu-item-desc { padding: 16px; background: linear-gradient(135deg, #f0f7f0, #e8f5e8); min-height: 80px; display: flex; align-items: center; justify-content: center; text-align: center; color: #2D4A22; font-size: 13px; font-style: italic; border-bottom: 1px solid var(--gris-borde); }
   .menu-item-body { padding: 15px; }
   .btn-save-menu { width: 100%; background: var(--verde-oscuro); color: white; padding: 14px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 10px; font-family: 'DM Sans', sans-serif; }
 
-  /* Toast inline */
   .toast { padding: 12px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-bottom: 16px; }
   .toast-ok  { background: #d1fae5; color: #065f46; }
   .toast-err { background: #fee2e2; color: #991b1b; }
 
-  /* Filtro fechas estadísticas */
   .filtro-fechas { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
   .filtro-fechas input[type="date"] { padding: 8px 12px; border: 1px solid var(--gris-borde); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; }
   .filtro-fechas button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; font-size: 13px; font-family: 'DM Sans', sans-serif; }
   .btn-filtrar { background: var(--verde-oscuro); color: white; }
   .btn-limpiar { background: #f0f0f0; color: #555; }
 
-  /* Modal editar producto */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-  .modal-edit { background: white; border-radius: 16px; padding: 28px; width: 90%; max-width: 400px; }
+  .modal-edit { background: white; border-radius: 16px; padding: 28px; width: 90%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
   .modal-edit h3 { font-size: 1.1rem; font-weight: 800; color: var(--verde-oscuro); margin-bottom: 18px; }
   .edit-field { margin-bottom: 14px; }
   .edit-field label { display: block; font-size: 12px; font-weight: 600; color: #888; margin-bottom: 4px; text-transform: uppercase; }
-  .edit-field input { width: 100%; padding: 10px 12px; border: 1px solid var(--gris-borde); border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif; }
+  .edit-field input, .edit-field textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--gris-borde); border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif; }
+  .edit-field textarea { resize: vertical; min-height: 80px; }
   .edit-actions { display: flex; gap: 10px; margin-top: 18px; }
   .edit-actions button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; }
   .btn-guardar { background: var(--verde-oscuro); color: white; }
@@ -131,17 +128,15 @@ export default function PanelEmpleado() {
   const [productos, setProductos] = useState([]);
   const [qrCodigo, setQrCodigo] = useState('');
   const [colaLocal, setColaLocal] = useState([]);
-  const [toast, setToast] = useState(null); // { tipo: 'ok'|'err', msg: string }
+  const [toast, setToast] = useState(null);
 
-  // Estadísticas
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(false);
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
 
-  // Editar producto
   const [productoEditando, setProductoEditando] = useState(null);
-  const [editForm, setEditForm] = useState({ nombre: '', precio: '', disponible: true });
+  const [editForm, setEditForm] = useState({ nombre: '', descripcion: '', precio: '', stock: 100 });
 
   const mostrarToast = (tipo, msg) => {
     setToast({ tipo, msg });
@@ -169,7 +164,6 @@ export default function PanelEmpleado() {
       const data = await api.getEstadisticas(inicio, fin);
       setStats(data);
     } catch (e) {
-      console.error('Error cargando estadísticas:', e);
       mostrarToast('err', 'No se pudieron cargar las estadísticas');
     } finally {
       setLoadingStats(false);
@@ -183,12 +177,10 @@ export default function PanelEmpleado() {
     return () => clearInterval(interval);
   }, [cargarDatos, leerColaLocal]);
 
-  // Cargar estadísticas al entrar en la pestaña
   useEffect(() => {
     if (tab === 'reportes' && !stats) cargarEstadisticas();
   }, [tab]);
 
-  // Cola enriquecida con localStorage
   const pedidosPagados = pedidos.filter(p => p.estado?.toLowerCase() === 'pagado');
   const pedidosEnriquecidos = pedidosPagados.map(p => {
     const local = colaLocal.find(c => c.id === p.id);
@@ -224,7 +216,7 @@ export default function PanelEmpleado() {
       cargarDatos();
       leerColaLocal();
     } catch (err) {
-      mostrarToast('err', err?.data?.error || err?.data?.mensaje || 'Código QR no válido');
+      mostrarToast('err', err?.data?.error || 'Código QR no válido');
     }
   };
 
@@ -235,13 +227,18 @@ export default function PanelEmpleado() {
 
   const abrirEdicion = (prod) => {
     setProductoEditando(prod);
-    setEditForm({ nombre: prod.nombre, precio: prod.precio, disponible: prod.disponible });
+    setEditForm({ nombre: prod.nombre, descripcion: prod.descripcion || '', precio: prod.precio, stock: prod.stock ?? 100 });
   };
 
   const guardarEdicion = async () => {
     if (!productoEditando) return;
     try {
-      await api.actualizarProducto(productoEditando.id, editForm);
+      await api.actualizarProducto(productoEditando.id, {
+        nombre: editForm.nombre,
+        descripcion: editForm.descripcion,
+        precio: editForm.precio,
+        stock: editForm.stock,
+      });
       setProductoEditando(null);
       cargarDatos();
       mostrarToast('ok', 'Producto actualizado correctamente');
@@ -325,10 +322,7 @@ export default function PanelEmpleado() {
       <main className="main">
         <header className="header-panel"><h1>Panel de Control</h1></header>
 
-        {/* Toast global */}
-        {toast && (
-          <div className={`toast toast-${toast.tipo}`}>{toast.msg}</div>
-        )}
+        {toast && <div className={`toast toast-${toast.tipo}`}>{toast.msg}</div>}
 
         {/* ── TABLERO ── */}
         {tab === 'tablero' && (
@@ -352,7 +346,6 @@ export default function PanelEmpleado() {
             </div>
 
             <div className="tablero-bottom-row">
-              {/* Cola de recogida */}
               <div className="card-white table-responsive">
                 <h3 className="section-title" style={{ fontSize: '0.9rem', borderLeft: '4px solid var(--verde-lima)', paddingLeft: '10px' }}>
                   COLA DE RECOGIDA
@@ -379,9 +372,7 @@ export default function PanelEmpleado() {
                               : <span style={{ color: '#ccc', fontSize: '12px' }}>—</span>}
                           </td>
                           <td><span className="status-pill pagado">PAGADO</span></td>
-                          <td>
-                            <button className="btn-action" onClick={() => marcarEntregado(p.id)}>ENTREGAR</button>
-                          </td>
+                          <td><button className="btn-action" onClick={() => marcarEntregado(p.id)}>ENTREGAR</button></td>
                         </tr>
                       );
                     }) : (
@@ -391,7 +382,6 @@ export default function PanelEmpleado() {
                 </table>
               </div>
 
-              {/* Validación manual */}
               <div className="card-white">
                 <h3 className="section-title" style={{ fontSize: '0.9rem', borderLeft: '4px solid var(--verde-lima)', paddingLeft: '10px' }}>
                   VALIDACIÓN MANUAL
@@ -403,21 +393,14 @@ export default function PanelEmpleado() {
                   readOnly
                   placeholder="CÓDIGO O ID"
                 />
-                <button
-                  className="btn-save-menu"
-                  style={{ height: '50px', fontSize: '1rem', marginTop: '12px' }}
-                  onClick={handleValidarQR}
-                >
+                <button className="btn-save-menu" style={{ height: '50px', fontSize: '1rem', marginTop: '12px' }} onClick={handleValidarQR}>
                   VALIDAR AHORA
                 </button>
                 <div className="keyboard">
                   {KEYS.map(k => (
-                    <div
-                      key={k}
-                      className="key"
+                    <div key={k} className="key"
                       style={{ padding: '15px 5px', background: k === '⌫' ? '#fee2e2' : '#f4f4f4', color: k === '⌫' ? '#ef4444' : 'inherit' }}
-                      onClick={() => handleKey(k)}
-                    >
+                      onClick={() => handleKey(k)}>
                       {k}
                     </div>
                   ))}
@@ -445,22 +428,20 @@ export default function PanelEmpleado() {
                     <td><span className="status-pill pagado">{p.estado?.toUpperCase()}</span></td>
                     <td style={{ display: 'flex', gap: '6px' }}>
                       {p.estado === 'pagado' && (
-                        <button className="btn-action" style={{ color: 'var(--verde-oscuro)' }}
-                          onClick={() => marcarEntregado(p.id)}>
+                        <button className="btn-action" style={{ color: 'var(--verde-oscuro)' }} onClick={() => marcarEntregado(p.id)}>
                           Entregar
                         </button>
                       )}
                       {p.codigo_qr && p.estado !== 'entregado' && (
-                        <button className="btn-action"
-                          onClick={async () => {
-                            try {
-                              const res = await api.validarQR(p.codigo_qr);
-                              mostrarToast('ok', res.mensaje || 'Entregado');
-                              cargarDatos();
-                            } catch (err) {
-                              mostrarToast('err', err?.data?.error || 'Error al validar QR');
-                            }
-                          }}>
+                        <button className="btn-action" onClick={async () => {
+                          try {
+                            const res = await api.validarQR(p.codigo_qr);
+                            mostrarToast('ok', res.mensaje || 'Entregado');
+                            cargarDatos();
+                          } catch (err) {
+                            mostrarToast('err', err?.data?.error || 'Error al validar QR');
+                          }
+                        }}>
                           Validar QR
                         </button>
                       )}
@@ -478,24 +459,21 @@ export default function PanelEmpleado() {
             <div className="menu-grid">
               {productos.map(prod => (
                 <div className="menu-item-card" key={prod.id}>
-                  <div className="menu-item-img">
-                    {prod.imagen_url
-                      ? <img src={prod.imagen_url} alt={prod.nombre} />
-                      : <div style={{ padding: '20px', color: '#ccc' }}>Sin imagen</div>}
+                  <div className="menu-item-desc">
+                    {prod.descripcion || <span style={{ color: '#aaa' }}>Sin descripción</span>}
                   </div>
                   <div className="menu-item-body">
-                    <p style={{ fontWeight: 700 }}>{prod.nombre}</p>
-                    <p style={{ fontWeight: 800, color: 'var(--verde-oscuro)' }}>{parseFloat(prod.precio).toFixed(2)}€</p>
-                    <p style={{ fontSize: '11px', color: prod.disponible ? '#065f46' : '#991b1b', marginTop: 4 }}>
+                    <p style={{ fontWeight: 700, marginBottom: 4 }}>{prod.nombre}</p>
+                    <p style={{ fontWeight: 800, color: 'var(--verde-oscuro)', marginBottom: 4 }}>{parseFloat(prod.precio).toFixed(2)}€</p>
+                    <p style={{ fontSize: '11px', color: '#888', marginBottom: 4 }}>Stock: {prod.stock ?? 0}</p>
+                    <p style={{ fontSize: '11px', color: prod.disponible ? '#065f46' : '#991b1b', marginBottom: 10 }}>
                       {prod.disponible ? '● Disponible' : '● No disponible'}
                     </p>
-                    <div style={{ display: 'flex', gap: '6px', marginTop: '10px' }}>
-                      <button className="btn-action" style={{ flex: 1, color: 'var(--verde-oscuro)' }}
-                        onClick={() => abrirEdicion(prod)}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <button className="btn-action" style={{ flex: 1, color: 'var(--verde-oscuro)' }} onClick={() => abrirEdicion(prod)}>
                         Editar
                       </button>
-                      <button className="btn-action" style={{ flex: 1, color: 'var(--rojo)' }}
-                        onClick={() => eliminarProducto(prod.id)}>
+                      <button className="btn-action" style={{ flex: 1, color: 'var(--rojo)' }} onClick={() => eliminarProducto(prod.id)}>
                         Eliminar
                       </button>
                     </div>
@@ -504,16 +482,22 @@ export default function PanelEmpleado() {
               ))}
             </div>
 
-            {/* Formulario nuevo producto */}
+            {/* Formulario nuevo producto — sin imagen */}
             <aside className="card-white">
               <h3 className="section-title" style={{ fontSize: '1rem' }}>NUEVO PRODUCTO</h3>
               <form onSubmit={async (e) => {
                 e.preventDefault();
                 const btn = e.target.querySelector('button[type="submit"]');
                 btn.disabled = true; btn.innerText = 'ENVIANDO...';
-                const formData = new FormData(e.target);
+                const fd = new FormData(e.target);
+                const data = {
+                  nombre: fd.get('nombre'),
+                  descripcion: fd.get('descripcion'),
+                  precio: fd.get('precio'),
+                  stock: fd.get('stock') || 100,
+                };
                 try {
-                  await api.crearProducto(formData);
+                  await api.crearProducto(data);
                   e.target.reset();
                   cargarDatos();
                   mostrarToast('ok', 'Producto añadido correctamente');
@@ -523,29 +507,30 @@ export default function PanelEmpleado() {
                   btn.disabled = false; btn.innerText = 'AÑADIR AL MENÚ';
                 }
               }}>
-                <input name="nombre" placeholder="Nombre" required
+                <input name="nombre" placeholder="Nombre del producto" required
                   style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '8px', border: '1px solid #ddd', fontFamily: 'DM Sans, sans-serif' }} />
-                <input name="precio" type="number" step="0.01" placeholder="Precio" required
+                <textarea name="descripcion" placeholder="Descripción del producto" rows={3}
+                  style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '8px', border: '1px solid #ddd', fontFamily: 'DM Sans, sans-serif', resize: 'vertical' }} />
+                <input name="precio" type="number" step="0.01" placeholder="Precio (€)" required
                   style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '8px', border: '1px solid #ddd', fontFamily: 'DM Sans, sans-serif' }} />
-                <input name="imagen" type="file" accept="image/*" style={{ marginBottom: '10px' }} />
+                <input name="stock" type="number" placeholder="Stock (unidades)" defaultValue={100}
+                  style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '8px', border: '1px solid #ddd', fontFamily: 'DM Sans, sans-serif' }} />
                 <button type="submit" className="btn-save-menu">AÑADIR AL MENÚ</button>
               </form>
             </aside>
           </div>
         )}
 
-        {/* ── REPORTES / ESTADÍSTICAS ── */}
+        {/* ── REPORTES ── */}
         {tab === 'reportes' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
               <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>Reportes y Análisis</h1>
-              <button onClick={descargarPDF} className="btn-action"
-                style={{ background: 'var(--verde-oscuro)', color: 'white', padding: '10px 18px' }}>
+              <button onClick={descargarPDF} className="btn-action" style={{ background: 'var(--verde-oscuro)', color: 'white', padding: '10px 18px' }}>
                 EXPORTAR PDF
               </button>
             </div>
 
-            {/* Filtro por fechas */}
             <div className="card-white">
               <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#888', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 FILTRAR POR FECHAS
@@ -559,12 +544,10 @@ export default function PanelEmpleado() {
                   <label style={{ fontSize: '12px', color: '#888', display: 'block', marginBottom: '4px' }}>Hasta</label>
                   <input type="date" value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
                 </div>
-                <button className="btn-filtrar" style={{ marginTop: '18px' }}
-                  onClick={() => cargarEstadisticas(fechaInicio || null, fechaFin || null)}>
+                <button className="btn-filtrar" style={{ marginTop: '18px' }} onClick={() => cargarEstadisticas(fechaInicio || null, fechaFin || null)}>
                   Aplicar filtro
                 </button>
-                <button className="btn-limpiar" style={{ marginTop: '18px' }}
-                  onClick={() => { setFechaInicio(''); setFechaFin(''); cargarEstadisticas(); }}>
+                <button className="btn-limpiar" style={{ marginTop: '18px' }} onClick={() => { setFechaInicio(''); setFechaFin(''); cargarEstadisticas(); }}>
                   Limpiar
                 </button>
               </div>
@@ -574,7 +557,6 @@ export default function PanelEmpleado() {
               <div style={{ textAlign: 'center', padding: '40px', color: '#aaa' }}>Cargando estadísticas...</div>
             ) : stats ? (
               <>
-                {/* Resumen */}
                 <div className="card-white" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', textAlign: 'center', gap: '10px' }}>
                   {[
                     { label: 'VENTAS', valor: `${stats.resumen.total_ventas.toFixed(2)}€` },
@@ -590,7 +572,6 @@ export default function PanelEmpleado() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                  {/* Top productos */}
                   <div className="card-white">
                     <h3 className="section-title" style={{ fontSize: '0.9rem' }}>Top Productos</h3>
                     {stats.top_productos.length === 0
@@ -611,7 +592,6 @@ export default function PanelEmpleado() {
                         })}
                   </div>
 
-                  {/* Pedidos por estado */}
                   <div className="card-white">
                     <h3 className="section-title" style={{ fontSize: '0.9rem' }}>Pedidos por Estado</h3>
                     <table className="gestion-table">
@@ -627,7 +607,6 @@ export default function PanelEmpleado() {
                   </div>
                 </div>
 
-                {/* Ingresos diarios */}
                 {stats.ingresos_diarios.length > 0 && (
                   <div className="card-white">
                     <h3 className="section-title" style={{ fontSize: '0.9rem' }}>Ingresos Diarios</h3>
@@ -650,34 +629,33 @@ export default function PanelEmpleado() {
               </>
             ) : (
               <div style={{ textAlign: 'center', padding: '40px', color: '#aaa' }}>
-                No hay datos disponibles. Aplica un filtro o espera a tener pedidos.
+                No hay datos disponibles.
               </div>
             )}
           </div>
         )}
       </main>
 
-      {/* ── Modal editar producto ── */}
+      {/* Modal editar producto */}
       {productoEditando && (
         <div className="modal-overlay" onClick={() => setProductoEditando(null)}>
           <div className="modal-edit" onClick={e => e.stopPropagation()}>
             <h3>EDITAR PRODUCTO</h3>
             <div className="edit-field">
               <label>Nombre</label>
-              <input value={editForm.nombre}
-                onChange={e => setEditForm({ ...editForm, nombre: e.target.value })} />
+              <input value={editForm.nombre} onChange={e => setEditForm({ ...editForm, nombre: e.target.value })} />
+            </div>
+            <div className="edit-field">
+              <label>Descripción</label>
+              <textarea value={editForm.descripcion} onChange={e => setEditForm({ ...editForm, descripcion: e.target.value })} />
             </div>
             <div className="edit-field">
               <label>Precio (€)</label>
-              <input type="number" step="0.01" value={editForm.precio}
-                onChange={e => setEditForm({ ...editForm, precio: e.target.value })} />
+              <input type="number" step="0.01" value={editForm.precio} onChange={e => setEditForm({ ...editForm, precio: e.target.value })} />
             </div>
-            <div className="edit-field" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <input type="checkbox" id="disp" checked={editForm.disponible}
-                onChange={e => setEditForm({ ...editForm, disponible: e.target.checked })} />
-              <label htmlFor="disp" style={{ fontSize: '14px', color: '#555', textTransform: 'none', letterSpacing: 0 }}>
-                Producto disponible
-              </label>
+            <div className="edit-field">
+              <label>Stock (unidades)</label>
+              <input type="number" value={editForm.stock} onChange={e => setEditForm({ ...editForm, stock: e.target.value })} />
             </div>
             <div className="edit-actions">
               <button className="btn-cancelar" onClick={() => setProductoEditando(null)}>Cancelar</button>

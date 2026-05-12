@@ -11,31 +11,16 @@ const CSS = `
 
   .menu-root { min-height: 100vh; background: var(--bg); display: flex; justify-content: center; font-family: 'DM Sans', sans-serif; }
   .mobile { width: 100%; max-width: 430px; background: var(--bg); min-height: 100vh; position: relative; }
-  .menu-header {
-    position: sticky; top: 0; z-index: 20; background: var(--white);
-    padding: 10px 5px 10px 18px;
-    display: flex; justify-content: space-between;
-    align-items: center; border-bottom: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
+  .menu-header { position: sticky; top: 0; z-index: 20; background: var(--white); padding: 10px 5px 10px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
   .logo-area { display: flex; align-items: center; gap: 10px; }
   .logo-area img { width: 34px; height: 34px; object-fit: contain; }
   .logo-area strong { font-size: 13px; color: var(--text); font-weight: 700; }
   .icon-btn { background: none; border: none; cursor: pointer; color: var(--text); padding: 0px 4px; display: flex; align-items: center; }
   .notif-wrap { position: relative; }
   .notif-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: #ff5252; border-radius: 50%; border: 1.5px solid white; }
-
   .dropdown-wrap { position: relative; margin-left: auto; margin-right: 0; }
-  .dropdown-menu {
-    position: absolute; top: 42px; right: 0; background: white;
-    border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    min-width: 160px; z-index: 100; overflow: hidden; border: 1px solid var(--border);
-  }
-  .dropdown-item {
-    display: block; padding: 12px 16px; font-size: 14px; color: var(--text);
-    cursor: pointer; background: none; border: none; width: 100%; text-align: left;
-    text-decoration: none; font-family: 'DM Sans', sans-serif;
-  }
+  .dropdown-menu { position: absolute; top: 42px; right: 0; background: white; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 160px; z-index: 100; overflow: hidden; border: 1px solid var(--border); }
+  .dropdown-item { display: block; padding: 12px 16px; font-size: 14px; color: var(--text); cursor: pointer; background: none; border: none; width: 100%; text-align: left; text-decoration: none; font-family: 'DM Sans', sans-serif; }
   .dropdown-item:hover { background: var(--light-green); color: var(--green); }
   .dropdown-item.danger { color: #ff5252; }
   .dropdown-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
@@ -43,11 +28,11 @@ const CSS = `
   .menu-content { padding: 16px 16px 100px; }
   .menu-title { font-size: 26px; font-weight: 800; color: var(--green); text-align: center; margin: 10px 0 18px; }
 
-  .product-card { background: var(--white); border-radius: 16px; overflow: hidden; margin-bottom: 14px; border: 1px solid var(--border); }
-  .product-img { height: 140px; position: relative; }
-  .product-img img { width: 100%; height: 100%; object-fit: cover; }
-  .img-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 14px; background: linear-gradient(transparent, rgba(0,0,0,0.75)); color: white; font-weight: 700; font-size: 15px; }
-  .product-footer { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .product-card { background: var(--white); border-radius: 16px; overflow: hidden; margin-bottom: 14px; border: 1px solid var(--border); display: flex; align-items: stretch; }
+  .product-desc-box { width: 110px; flex-shrink: 0; background: linear-gradient(135deg, #e8f5e8, #d4edda); display: flex; align-items: center; justify-content: center; padding: 14px 10px; text-align: center; font-size: 12px; color: #2d5a30; font-style: italic; line-height: 1.4; border-right: 1px solid var(--border); }
+  .product-info { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; justify-content: center; }
+  .product-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .product-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
   .price { font-size: 20px; font-weight: 800; color: var(--text); }
   .btn-add { background: var(--green); color: white; border: none; padding: 9px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; transition: background 0.2s; }
   .btn-add:hover { background: #356838; }
@@ -55,18 +40,8 @@ const CSS = `
   .qty-btn { width: 30px; height: 30px; background: var(--light-green); color: var(--green); border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .qty-num { font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
 
-  .bottom-bar {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 100%; max-width: 430px; background: var(--white);
-    padding: 14px 18px; border-top: 1px solid var(--border);
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
-  }
-  .btn-continuar {
-    display: block; background: var(--green); color: white; text-align: center;
-    padding: 15px; border-radius: 14px; font-weight: 700; font-size: 16px;
-    text-decoration: none; cursor: pointer; border: none; width: 100%;
-    transition: background 0.2s; font-family: 'DM Sans', sans-serif;
-  }
+  .bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--white); padding: 14px 18px; border-top: 1px solid var(--border); box-shadow: 0 -4px 12px rgba(0,0,0,0.06); }
+  .btn-continuar { display: block; background: var(--green); color: white; text-align: center; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; border: none; width: 100%; transition: background 0.2s; font-family: 'DM Sans', sans-serif; }
   .btn-continuar:hover { background: #356838; }
   .btn-continuar:disabled { background: #ccc; cursor: not-allowed; }
   .cart-badge { background: white; color: var(--green); border-radius: 12px; padding: 2px 8px; font-size: 13px; margin-left: 8px; font-weight: 800; }
@@ -76,42 +51,24 @@ const CSS = `
   .modal-title { font-size: 1.3rem; font-weight: 800; margin: 0 0 18px; color: var(--text); }
   .btn-close { display: block; width: 100%; padding: 13px; background: var(--green); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 18px; font-size: 15px; font-family: 'DM Sans', sans-serif; }
 
-  /* Pedidos */
+  .btn-repetir { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 14px; padding: 11px; background: var(--light-green); color: var(--green); border: 1.5px solid var(--green); border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .btn-repetir:hover { background: var(--green); color: white; }
+
   .pedido-card { border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
   .pedido-header { padding: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
   .pedido-body { padding: 13px; background: #fafafa; border-top: 1px dashed var(--border); font-size: 13px; }
   .pedido-line { display: flex; justify-content: space-between; margin-bottom: 6px; }
-
-  /* Botón repetir pedido */
-  .btn-repetir {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    width: 100%; margin-top: 14px; padding: 11px;
-    background: var(--light-green); color: var(--green);
-    border: 1.5px solid var(--green); border-radius: 12px;
-    font-weight: 700; font-size: 13px; cursor: pointer;
-    font-family: 'DM Sans', sans-serif; transition: all 0.2s;
-  }
-  .btn-repetir:hover { background: var(--green); color: white; }
-
-  /* QR del pedido */
-  .pedido-qr-box {
-    margin-top: 14px; padding: 14px; background: white;
-    border-radius: 12px; border: 1px dashed #ccc;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-  }
+  .pedido-qr-box { margin-top: 14px; padding: 14px; background: white; border-radius: 12px; border: 1px dashed #ccc; display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .pedido-qr-img { width: 120px; height: 120px; }
   .pedido-qr-codigo { font-size: 20px; font-weight: 900; letter-spacing: 4px; color: var(--text); }
   .pedido-qr-label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
   .estado-pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
   .estado-pendiente { background: #fff3cd; color: #856404; }
-  .estado-pagado    { background: #d1fae5; color: #065f46; }
+  .estado-pagado { background: #d1fae5; color: #065f46; }
   .estado-entregado { background: #e0e7ff; color: #3730a3; }
   .estado-cancelado { background: #fee2e2; color: #991b1b; }
-
   .loading { text-align: center; padding: 40px; color: #aaa; font-size: 15px; }
   .empty { text-align: center; padding: 40px; color: #bbb; }
-
-  /* Ajustes */
   .switch { position: relative; display: inline-block; width: 42px; height: 22px; }
   .switch input { opacity: 0; width: 0; height: 0; }
   .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 22px; transition: .3s; }
@@ -121,12 +78,6 @@ const CSS = `
   .ajuste-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
   .btn-danger { color: #ff5252; background: none; border: 1px solid #ff5252; padding: 10px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 700; margin-top: 16px; font-family: 'DM Sans', sans-serif; }
 `;
-
-const PLACEHOLDER_IMGS = {
-  'panBaconQueso.jpg': '/panBaconQueso.jpg',
-  'pincho.jpg': '/pincho.jpg',
-  'napolitana.jpg': '/napolitana.jpg',
-};
 
 const estadoPillClass = (estado) => {
   const map = { pendiente: 'estado-pendiente', pagado: 'estado-pagado', entregado: 'estado-entregado', cancelado: 'estado-cancelado' };
@@ -164,7 +115,7 @@ export default function Menu() {
       .finally(() => setLoadingPedidos(false));
   };
 
-  const addToCart    = (id) => setCart(c => ({ ...c, [id]: (c[id] || 0) + 1 }));
+  const addToCart = (id) => setCart(c => ({ ...c, [id]: (c[id] || 0) + 1 }));
   const removeFromCart = (id) => setCart(c => {
     const n = { ...c };
     if (n[id] <= 1) delete n[id];
@@ -183,12 +134,10 @@ export default function Menu() {
     navigate('/carrito', { state: { items: itemsParaCarrito } });
   };
 
-  // Carga los productos del pedido anterior y los añade al carrito
   const repetirPedido = (pedido) => {
     if (!pedido.items?.length) return;
     const nuevoCart = {};
     const itemsValidos = [];
-
     pedido.items.forEach(item => {
       const productoActual = productos.find(p => p.id === item.producto);
       if (productoActual && productoActual.disponible) {
@@ -196,19 +145,10 @@ export default function Menu() {
         itemsValidos.push({ ...productoActual, cantidad: item.cantidad });
       }
     });
-
-    if (itemsValidos.length === 0) {
-      alert('Los productos de este pedido ya no están disponibles.');
-      return;
-    }
-
+    if (itemsValidos.length === 0) { alert('Los productos de este pedido ya no están disponibles.'); return; }
     setCart(nuevoCart);
     setModal(null);
-
-    // Si algún producto no está disponible, avisamos pero continuamos
-    if (itemsValidos.length < pedido.items.length) {
-      alert('Algunos productos ya no están disponibles y no se han añadido.');
-    }
+    if (itemsValidos.length < pedido.items.length) alert('Algunos productos ya no están disponibles y no se han añadido.');
   };
 
   return (
@@ -216,8 +156,6 @@ export default function Menu() {
       <style>{CSS}</style>
       <div className="menu-root">
         <div className="mobile">
-
-          {/* Header */}
           <header className="menu-header">
             <div className="logo-area">
               <img src="/ies_pio_baroja_logo.jpg" alt="Logo" />
@@ -245,7 +183,6 @@ export default function Menu() {
             )}
           </header>
 
-          {/* Productos */}
           <main className="menu-content">
             <h1 className="menu-title">MENÚ</h1>
             {loadingProductos ? (
@@ -255,32 +192,27 @@ export default function Menu() {
             ) : (
               productos.map(p => (
                 <div className="product-card" key={p.id}>
-                  <div className="product-img">
-                    <img
-                      src={p.imagen_url || PLACEHOLDER_IMGS[p.nombre] || `https://placehold.co/400x140/98d361/white?text=${encodeURIComponent(p.nombre)}`}
-                      alt={p.nombre}
-                      onError={e => { e.target.src = `https://placehold.co/400x140/98d361/white?text=${encodeURIComponent(p.nombre)}`; }}
-                    />
-                    <div className="img-overlay">{p.nombre}</div>
-                  </div>
-                  <div className="product-footer">
-                    <span className="price">{parseFloat(p.precio).toFixed(2)}€</span>
-                    {cart[p.id] ? (
-                      <div className="qty-ctrl">
-                        <button className="qty-btn" onClick={() => removeFromCart(p.id)}>−</button>
-                        <span className="qty-num">{cart[p.id]}</span>
-                        <button className="qty-btn" onClick={() => addToCart(p.id)}>+</button>
-                      </div>
-                    ) : (
-                      <button className="btn-add" onClick={() => addToCart(p.id)}>AÑADIR</button>
-                    )}
+                  <div className="product-desc-box">{p.descripcion || p.nombre}</div>
+                  <div className="product-info">
+                    <div className="product-name">{p.nombre}</div>
+                    <div className="product-footer">
+                      <span className="price">{parseFloat(p.precio).toFixed(2)}€</span>
+                      {cart[p.id] ? (
+                        <div className="qty-ctrl">
+                          <button className="qty-btn" onClick={() => removeFromCart(p.id)}>−</button>
+                          <span className="qty-num">{cart[p.id]}</span>
+                          <button className="qty-btn" onClick={() => addToCart(p.id)}>+</button>
+                        </div>
+                      ) : (
+                        <button className="btn-add" onClick={() => addToCart(p.id)}>AÑADIR</button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))
             )}
           </main>
 
-          {/* Bottom bar */}
           <div className="bottom-bar">
             <button className="btn-continuar" onClick={irAlCarrito} disabled={!totalItems}>
               {totalItems ? (<>Ver Carrito <span className="cart-badge">{totalItems}</span></>) : 'Añade algo al pedido'}
@@ -289,7 +221,6 @@ export default function Menu() {
         </div>
       </div>
 
-      {/* ── Modal Perfil ── */}
       {modal === 'perfil' && (
         <div className="overlay" onClick={() => setModal(null)}>
           <div className="modal-box" onClick={e => e.stopPropagation()}>
@@ -297,116 +228,72 @@ export default function Menu() {
             <p><strong>Nombre:</strong> {user?.first_name} {user?.last_name}</p>
             <p style={{ marginTop: 8 }}><strong>Usuario:</strong> {user?.username}</p>
             <p style={{ marginTop: 8 }}><strong>Saldo:</strong> {parseFloat(user?.saldo || 0).toFixed(2)}€</p>
-            {user?.tarjeta && (
-              <p style={{ marginTop: 8 }}>
-                <strong>Tarjeta guardada:</strong> {user.tarjeta.numero} · {user.tarjeta.expiry}
-              </p>
-            )}
+            {user?.tarjeta && <p style={{ marginTop: 8 }}><strong>Tarjeta guardada:</strong> {user.tarjeta.numero} · {user.tarjeta.expiry}</p>}
             <button className="btn-close" onClick={() => setModal(null)}>Cerrar</button>
           </div>
         </div>
       )}
 
-      {/* ── Modal Mis Pedidos ── */}
       {modal === 'pedidos' && (
         <div className="overlay" onClick={() => setModal(null)}>
           <div className="modal-box" onClick={e => e.stopPropagation()}>
             <h2 className="modal-title">Mis Pedidos</h2>
-            {loadingPedidos ? (
-              <div className="loading">Cargando...</div>
-            ) : pedidos.length === 0 ? (
-              <div className="empty">No tienes pedidos aún</div>
-            ) : (
-              pedidos.map(p => (
-                <div className="pedido-card" key={p.id}>
-                  <div className="pedido-header" onClick={() => setExpandido(expandido === p.id ? null : p.id)}>
-                    <div>
-                      <strong>
-                        {new Date(p.creado).toLocaleDateString('es-ES')} —{' '}
-                        {new Date(p.creado).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}h
-                      </strong>
-                      <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
-                        #{p.id} · <span className={estadoPillClass(p.estado)}>{p.estado}</span>
-                      </div>
-                    </div>
-                    <span style={{ fontWeight: 700, color: 'var(--green)' }}>
-                      {parseFloat(p.total).toFixed(2)}€ {expandido === p.id ? '▴' : '▾'}
-                    </span>
+            {loadingPedidos ? <div className="loading">Cargando...</div>
+            : pedidos.length === 0 ? <div className="empty">No tienes pedidos aún</div>
+            : pedidos.map(p => (
+              <div className="pedido-card" key={p.id}>
+                <div className="pedido-header" onClick={() => setExpandido(expandido === p.id ? null : p.id)}>
+                  <div>
+                    <strong>{new Date(p.creado).toLocaleDateString('es-ES')} — {new Date(p.creado).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}h</strong>
+                    <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>#{p.id} · <span className={estadoPillClass(p.estado)}>{p.estado}</span></div>
                   </div>
-
-                  {expandido === p.id && (
-                    <div className="pedido-body">
-                      {/* Líneas de productos */}
-                      {p.items?.map(item => (
-                        <div className="pedido-line" key={item.id}>
-                          <span>{item.cantidad}× {item.nombre_producto}</span>
-                          <span>{parseFloat(item.subtotal).toFixed(2)}€</span>
-                        </div>
-                      ))}
-
-                      {/* QR de recogida — solo si el pedido está pagado o listo */}
-                      {(p.estado === 'pagado' || p.estado === 'listo') && p.codigo_qr && (
-                        <div className="pedido-qr-box">
-                          <p className="pedido-qr-label">Código de recogida</p>
-                          <img
-                            className="pedido-qr-img"
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${p.codigo_qr}`}
-                            alt="QR recogida"
-                          />
-                          <span className="pedido-qr-codigo">{p.codigo_qr}</span>
-                          <p className="pedido-qr-label">Muéstralo en la cafetería</p>
-                        </div>
-                      )}
-
-                      {/* Si ya fue entregado */}
-                      {p.estado === 'entregado' && (
-                        <div style={{ marginTop: 12, textAlign: 'center', color: '#065f46', fontWeight: 700, fontSize: 13 }}>
-                          ✓ Pedido recogido
-                        </div>
-                      )}
-
-                      {/* ── BOTÓN REPETIR PEDIDO ── */}
-                      {p.items?.length > 0 && (
-                        <button
-                          className="btn-repetir"
-                          onClick={(e) => { e.stopPropagation(); repetirPedido(p); }}
-                        >
-                          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>replay</span>
-                          Repetir este pedido
-                        </button>
-                      )}
-                    </div>
-                  )}
+                  <span style={{ fontWeight: 700, color: 'var(--green)' }}>{parseFloat(p.total).toFixed(2)}€ {expandido === p.id ? '▴' : '▾'}</span>
                 </div>
-              ))
-            )}
+                {expandido === p.id && (
+                  <div className="pedido-body">
+                    {p.items?.map(item => (
+                      <div className="pedido-line" key={item.id}>
+                        <span>{item.cantidad}× {item.nombre_producto}</span>
+                        <span>{parseFloat(item.subtotal).toFixed(2)}€</span>
+                      </div>
+                    ))}
+                    {(p.estado === 'pagado' || p.estado === 'listo') && p.codigo_qr && (
+                      <div className="pedido-qr-box">
+                        <p className="pedido-qr-label">Código de recogida</p>
+                        <img className="pedido-qr-img" src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${p.codigo_qr}`} alt="QR recogida" />
+                        <span className="pedido-qr-codigo">{p.codigo_qr}</span>
+                        <p className="pedido-qr-label">Muéstralo en la cafetería</p>
+                      </div>
+                    )}
+                    {p.estado === 'entregado' && <div style={{ marginTop: 12, textAlign: 'center', color: '#065f46', fontWeight: 700, fontSize: 13 }}>✓ Pedido recogido</div>}
+                    {p.items?.length > 0 && (
+                      <button className="btn-repetir" onClick={(e) => { e.stopPropagation(); repetirPedido(p); }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>replay</span>
+                        Repetir este pedido
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
             <button className="btn-close" onClick={() => setModal(null)}>Cerrar</button>
           </div>
         </div>
       )}
 
-      {/* ── Modal Ajustes ── */}
       {modal === 'ajustes' && (
         <div className="overlay" onClick={() => setModal(null)}>
           <div className="modal-box" onClick={e => e.stopPropagation()}>
             <h2 className="modal-title">Ajustes</h2>
             <div className="ajuste-row">
               <span>Modo Oscuro</span>
-              <label className="switch">
-                <input type="checkbox" checked={darkMode} onChange={e => setDarkMode(e.target.checked)} />
-                <span className="slider" />
-              </label>
+              <label className="switch"><input type="checkbox" checked={darkMode} onChange={e => setDarkMode(e.target.checked)} /><span className="slider" /></label>
             </div>
             <div className="ajuste-row">
               <span>Notificaciones</span>
-              <label className="switch">
-                <input type="checkbox" checked={notifOn} onChange={e => setNotifOn(e.target.checked)} />
-                <span className="slider" />
-              </label>
+              <label className="switch"><input type="checkbox" checked={notifOn} onChange={e => setNotifOn(e.target.checked)} /><span className="slider" /></label>
             </div>
-            <button className="btn-danger" onClick={() => {
-              if (window.confirm('¿Desactivar cuenta?')) { logout(); navigate('/'); }
-            }}>Desactivar Cuenta</button>
+            <button className="btn-danger" onClick={() => { if (window.confirm('¿Desactivar cuenta?')) { logout(); navigate('/'); } }}>Desactivar Cuenta</button>
             <button className="btn-close" onClick={() => setModal(null)}>Guardar y Salir</button>
           </div>
         </div>
