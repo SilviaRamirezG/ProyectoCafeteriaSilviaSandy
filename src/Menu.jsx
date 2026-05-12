@@ -241,7 +241,6 @@ export default function Menu() {
             <h2 className="modal-title">Mi Perfil</h2>
             <p className="modal-text"><strong>Nombre:</strong> {user?.first_name} {user?.last_name}</p>
             <p className="modal-text" style={{ marginTop: 8 }}><strong>Usuario:</strong> {user?.username}</p>
-            <p className="modal-text" style={{ marginTop: 8 }}><strong>Saldo:</strong> {parseFloat(user?.saldo || 0).toFixed(2)}€</p>
             {user?.tarjeta && <p className="modal-text" style={{ marginTop: 8 }}><strong>Tarjeta:</strong> {user.tarjeta.numero} · {user.tarjeta.expiry}</p>}
             <button className="btn-close" onClick={() => setModal(null)}>Cerrar</button>
           </div>
