@@ -11,4 +11,4 @@ RUN python manage.py collectstatic --no-input
 
 EXPOSE 8000
 
-CMD python manage.py migrate --no-input && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+CMD ["sh", "-c", "python manage.py migrate --no-input && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"]
