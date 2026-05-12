@@ -401,12 +401,11 @@ class EstadisticasView(APIView):
         })
 
 
-# ─── DESACTIVAR CUENTA ───────────────────────────────────────────────────────
+# ─── ELIMINAR CUENTA ─────────────────────────────────────────────────────────
 class DesactivarCuentaView(APIView):
     def post(self, request):
         user = request.user
-        user.is_active = False
-        user.save()
-        return Response({'mensaje': 'Cuenta desactivada correctamente'}, status=status.HTTP_200_OK)
+        user.delete()
+        return Response({'mensaje': 'Cuenta eliminada correctamente'}, status=status.HTTP_200_OK)
 
         
