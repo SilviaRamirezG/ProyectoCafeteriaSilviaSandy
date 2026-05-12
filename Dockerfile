@@ -9,4 +9,4 @@ COPY backend/ .
 
 RUN python manage.py collectstatic --no-input
 
-CMD ["sh", "-c", "python manage.py migrate --no-input && gunicorn core.wsgi:application --bind 0.0.0.0:${PORT:-8080}"]
+CMD ["sh", "-c", "python manage.py migrate --no-input && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"]
